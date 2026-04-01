@@ -1,0 +1,25 @@
+# Colors
+theme = "Blue Dolphin"
+
+# Fonts
+font-family = "Iosevka"
+adjust-underline-position = 2
+adjust-underline-thickness = 1
+
+# Clipboard
+clipboard-read = allow
+clipboard-write = allow
+clipboard-paste-protection = false
+
+# Shell
+shell-integration = fish
+shell-integration-features = no-cursor,no-title
+working-directory = home
+window-inherit-working-directory = false
+
+# Other UI Customization
+cursor-style = block
+cursor-style-blink = false
+mouse-hide-while-typing = true
+scrollback-limit = 100000000
+confirm-close-surface = false
