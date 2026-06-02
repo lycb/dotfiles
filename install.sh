@@ -8,6 +8,7 @@ DOTFILES_SRC="$DOTFILES_DIR/dotfiles"
 FILE_MAP=(
     "config.fish|$HOME/.config/fish/config.fish"
     "config.ghostty|$HOME/Library/Application Support/com.mitchellh.ghostty/config"
+    "tmux.conf|$HOME/.tmux.conf"
 )
 
 info() { printf "\033[1;34m::\033[0m %s\n" "$1"; }
@@ -91,6 +92,21 @@ install_tmux() {
     ok "tmux installed: $(tmux -V)"
 }
 
+install_copilot_cli() {
+    if command -v copilot &>/dev/null; then
+        ok "Copilot CLI is already installed"
+        return
+    fi
+
+    info "Copilot CLI not found, installing..."
+    if [[ "$(uname)" == "Darwin" ]]; then
+        brew install copilot-cli
+    else
+        curl -fsSL https://gh.io/copilot-install | bash
+    fi
+    ok "Copilot CLI installed"
+}
+
 backup_and_link() {
     local src="$1" dest="$2"
     local dest_dir
@@ -126,6 +142,21 @@ main() {
     install_git
     install_fish
     install_tmux
+    install_copilot_cli
+
+    # Set fish as default shell
+    local fish_path
+    fish_path="$(command -v fish)"
+    if [[ "$SHELL" != "$fish_path" ]]; then
+        info "Setting fish as default shell..."
+        if ! grep -qx "$fish_path" /etc/shells; then
+            echo "$fish_path" | sudo tee -a /etc/shells >/dev/null
+        fi
+        chsh -s "$fish_path"
+        ok "Default shell set to $fish_path"
+    else
+        ok "fish is already the default shell"
+    fi
 
     info "Installing dotfiles from $DOTFILES_SRC"
     echo
