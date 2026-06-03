@@ -129,11 +129,15 @@ install_pup() {
 
     info "Installing pup..."
     if [[ "$(uname)" == "Darwin" ]]; then
-        brew install pup
+        brew tap datadog-labs/pack
+        brew install datadog-labs/pack/pup
     else
-        go install github.com/DataDog/pup@latest
+        git clone https://github.com/DataDog/pup.git && cd pup
+        cargo build --release
+        cp target/release/pup /usr/local/bin/pup
     fi
     ok "pup installed"
+    info "Run \`pup auth login\` to login"
 }
 
 backup_and_link() {
