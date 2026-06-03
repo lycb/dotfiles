@@ -98,13 +98,42 @@ install_copilot_cli() {
         return
     fi
 
-    info "Copilot CLI not found, installing..."
+    read -rp "Install Copilot CLI? (Y/n) " answer
+    answer="${answer:-Y}"
+    if [[ "$answer" != "Y" && "$answer" != "y" ]]; then
+        info "Skipping Copilot CLI installation"
+        return
+    fi
+
+    info "Installing Copilot CLI..."
     if [[ "$(uname)" == "Darwin" ]]; then
         brew install copilot-cli
     else
         curl -fsSL https://gh.io/copilot-install | bash
     fi
     ok "Copilot CLI installed"
+}
+
+install_pup() {
+    if command -v pup &>/dev/null; then
+        ok "pup is already installed"
+        return
+    fi
+
+    read -rp "Install pup? (Y/n) " answer
+    answer="${answer:-Y}"
+    if [[ "$answer" != "Y" && "$answer" != "y" ]]; then
+        info "Skipping pup installation"
+        return
+    fi
+
+    info "Installing pup..."
+    if [[ "$(uname)" == "Darwin" ]]; then
+        brew install pup
+    else
+        go install github.com/DataDog/pup@latest
+    fi
+    ok "pup installed"
 }
 
 backup_and_link() {
@@ -143,6 +172,7 @@ main() {
     install_fish
     install_tmux
     install_copilot_cli
+    install_pup
 
     # Set fish as default shell
     local fish_path
