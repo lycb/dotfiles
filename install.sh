@@ -252,7 +252,9 @@ main() {
     # Set fish as default shell
     local fish_path
     fish_path="$(command -v fish)"
-    if [[ "$SHELL" != "$fish_path" ]]; then
+    if [[ -n "${CODESPACES:-}" ]]; then
+        info "Codespace detected, skipping chsh (use terminal profile to set fish)"
+    elif [[ "$SHELL" != "$fish_path" ]]; then
         info "Setting fish as default shell..."
         if ! grep -qx "$fish_path" /etc/shells; then
             echo "$fish_path" | sudo tee -a /etc/shells >/dev/null
