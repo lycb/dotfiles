@@ -16,6 +16,11 @@ warn() { printf "\033[1;33m::\033[0m %s\n" "$1"; }
 ok()   { printf "\033[1;32m::\033[0m %s\n" "$1"; }
 
 install_brew() {
+    if [[ "$(uname)" != "Darwin" ]]; then
+        info "Not macOS, skipping Homebrew installation"
+        return
+    fi
+
     if command -v brew &>/dev/null; then
         ok "Homebrew is already installed"
         return
@@ -92,6 +97,33 @@ install_tmux() {
     ok "tmux installed: $(tmux -V)"
 }
 
+install_node() {
+    if [[ -n "${CODESPACES:-}" ]]; then
+        info "Codespace detected, skipping Node.js installation"
+        return
+    fi
+
+    if command -v node &>/dev/null; then
+        ok "Node.js is already installed: $(node --version)"
+        return
+    fi
+
+    info "Node.js not found, installing..."
+    if [[ "$(uname)" == "Darwin" ]]; then
+        brew install node
+    elif command -v apt-get &>/dev/null; then
+        sudo apt-get update && sudo apt-get install -y nodejs npm
+    elif command -v dnf &>/dev/null; then
+        sudo dnf install -y nodejs npm
+    elif command -v pacman &>/dev/null; then
+        sudo pacman -S --noconfirm nodejs npm
+    else
+        warn "Could not detect package manager. Please install Node.js manually."
+        exit 1
+    fi
+    ok "Node.js installed: $(node --version)"
+}
+
 install_copilot_cli() {
     if command -v copilot &>/dev/null; then
         ok "Copilot CLI is already installed"
@@ -140,6 +172,31 @@ install_pup() {
     info "Run \`pup auth login\` to login"
 }
 
+install_azure_cli() {
+    if command -v az &>/dev/null; then
+        ok "Azure CLI is already installed: $(az --version | head -1)"
+        return
+    fi
+
+    read -rp "Install Azure CLI? (Y/n) " answer
+    answer="${answer:-Y}"
+    if [[ "$answer" != "Y" && "$answer" != "y" ]]; then
+        info "Skipping Azure CLI installation"
+        return
+    fi
+
+    info "Installing Azure CLI..."
+    if [[ "$(uname)" == "Darwin" ]]; then
+        brew install azure-cli
+    elif command -v apt-get &>/dev/null; then
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    else
+        curl -sL https://aka.ms/InstallAzureCli | sudo bash
+    fi
+    ok "Azure CLI installed"
+    info "Run \`az login\` to authenticate"
+}
+
 backup_and_link() {
     local src="$1" dest="$2"
     local dest_dir
@@ -175,8 +232,10 @@ main() {
     install_git
     install_fish
     install_tmux
+    install_node
     install_copilot_cli
     install_pup
+    install_azure_cli
 
     # Set fish as default shell
     local fish_path
