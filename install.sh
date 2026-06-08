@@ -130,11 +130,13 @@ install_copilot_cli() {
         return
     fi
 
-    read -rp "Install Copilot CLI? (Y/n) " answer
-    answer="${answer:-Y}"
-    if [[ "$answer" != "Y" && "$answer" != "y" ]]; then
-        info "Skipping Copilot CLI installation"
-        return
+    if [[ -z "${CODESPACES:-}" ]]; then
+        read -rp "Install Copilot CLI? (Y/n) " answer
+        answer="${answer:-Y}"
+        if [[ "$answer" != "Y" && "$answer" != "y" ]]; then
+            info "Skipping Copilot CLI installation"
+            return
+        fi
     fi
 
     info "Installing Copilot CLI..."
@@ -147,6 +149,11 @@ install_copilot_cli() {
 }
 
 install_pup() {
+    if [[ -n "${CODESPACES:-}" ]]; then
+        info "Codespace detected, skipping pup installation"
+        return
+    fi
+
     if command -v pup &>/dev/null; then
         ok "pup is already installed"
         return
@@ -173,6 +180,11 @@ install_pup() {
 }
 
 install_azure_cli() {
+    if [[ -n "${CODESPACES:-}" ]]; then
+        info "Codespace detected, skipping Azure CLI installation"
+        return
+    fi
+
     if command -v az &>/dev/null; then
         ok "Azure CLI is already installed: $(az --version | head -1)"
         return
