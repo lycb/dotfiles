@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Refetch Copilot skills from a GitHub repo (default: github/graphql-platform)
+# Refetch Copilot skills from a GitHub repo
 # and install them into the local Copilot skills directory (~/.copilot/skills).
 #
 # Usage:
@@ -11,12 +11,12 @@ set -euo pipefail
 #   ./install-skills.sh --help
 #
 # Config (override via env):
-#   SKILLS_REPO   repo to fetch from      (default: github/graphql-platform)
+#   SKILLS_REPO   repo to fetch from      
 #   SKILLS_REF    branch/tag/sha          (default: main)
 #   SKILLS_SUBDIR path to skills in repo  (default: skills)
 #   SKILLS_DEST   local install dir       (default: $HOME/.copilot/skills)
 
-SKILLS_REPO="${SKILLS_REPO:-github/graphql-platform}"
+SKILLS_REPO="${SKILLS_REPO}"
 SKILLS_REF="${SKILLS_REF:-main}"
 SKILLS_SUBDIR="${SKILLS_SUBDIR:-skills}"
 SKILLS_DEST="${SKILLS_DEST:-$HOME/.copilot/skills}"
@@ -28,7 +28,7 @@ err()  { printf "\033[1;31m::\033[0m %s\n" "$1" >&2; }
 
 usage() {
     cat <<'EOF'
-Refetch Copilot skills from a GitHub repo (default: github/graphql-platform)
+Refetch Copilot skills from a GitHub repo 
 and install them into the local Copilot skills directory (~/.copilot/skills).
 
 Usage:
@@ -38,7 +38,7 @@ Usage:
   ./install-skills.sh --help
 
 Config (override via env):
-  SKILLS_REPO   repo to fetch from      (default: github/graphql-platform)
+  SKILLS_REPO   repo to fetch from      
   SKILLS_REF    branch/tag/sha          (default: main)
   SKILLS_SUBDIR path to skills in repo  (default: skills)
   SKILLS_DEST   local install dir       (default: $HOME/.copilot/skills)
